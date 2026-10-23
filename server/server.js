@@ -34,6 +34,21 @@ app.post("/api/transactions", async (req, res) => {
   }
 });
 
+app.get("/api/transactions", async (req, res) => {
+  try {
+    const transactions = await Transaction.find().sort({
+      date: -1,
+    });
+
+    res.status(200).json(transactions);
+  } catch (error) {
+    res.status(400).json({
+      message: "Failed to retrieve transactions",
+      error: error.message,
+    });
+  }
+});
+
 const startServer = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
