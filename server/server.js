@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import Transaction from "./models/Transaction.js";
 
 dotenv.config();
 
@@ -15,6 +16,22 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({
     message: "Personal Finance Tracker API is running",
   });
+});
+
+app.post("/api/transactions", async (req, res) => {
+  try {
+    const transaction = await Transaction.create(req.body);
+
+    res.status(200).json({
+      message: "Transaction created successfully",
+      transaction,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Failed to create transaction",
+      error: error.message,
+    });
+  }
 });
 
 const startServer = async () => {
