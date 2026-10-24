@@ -42,8 +42,44 @@ app.get("/api/transactions", async (req, res) => {
 
     res.status(200).json(transactions);
   } catch (error) {
-    res.status(400).json({
+    res.status(500).json({
       message: "Failed to retrieve transactions",
+      error: error.message,
+    });
+  }
+});
+
+app.get("/api/transactions/summary", async (req, res) => {
+  try {
+    const transactions = await Transaction.find();
+
+    // 1. Calculate total income
+    const incomes = transactions.filter(
+      (transaction) => transaction.type === "income",
+    );
+    const totalIncome = incomes.reduce((total, transaction) => {
+      return total + transaction.amount;
+    }, 0);
+
+    // 2. Calculate total expenses
+    const expenses = transactions.filter(
+      (transaction) => transaction.type === "expense",
+    );
+    const totalExpenses = expenses.reduce((total, transaction) => {
+      return total + transaction.amount;
+    }, 0);
+
+    // 3. Return the balance
+    const balance = totalIncome - totalExpenses;
+
+    res.status(200).json({
+      totalIncome,
+      totalExpenses,
+      balance,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to retrieve transaction summary",
       error: error.message,
     });
   }
