@@ -7,7 +7,49 @@ function App() {
     totalExpenses: 0,
     balance: 0,
   });
+
   const [transactions, setTransactions] = useState([]);
+
+  const [formData, setFormData] = useState({
+    type: "expense",
+    amount: "",
+    category: "",
+    description: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => {
+      return { ...prev, [name]: value };
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:5000/api/transactions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          amount: Number(formData.amount),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create transaction");
+      }
+
+      const data = await response.json();
+
+      console.log("Transaction created:", data.transaction);
+    } catch (error) {
+      console.log("Error creating transaction:", error.message);
+    }
+  };
 
   useEffect(() => {
     const fetchSummary = async () => {
@@ -84,6 +126,40 @@ function App() {
           </div>
         );
       })}
+
+      <form onSubmit={handleSubmit}>
+        <label>Transaction Type</label>
+        <select name="type" value={formData.type} onChange={handleChange}>
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+        </select>
+
+        <label>Amount (GHC)</label>
+        <input
+          type="number"
+          name="amount"
+          value={formData.amount}
+          onChange={handleChange}
+        />
+
+        <label>Category</label>
+        <input
+          type="text"
+          name="category"
+          value={formData.category}
+          onChange={handleChange}
+        />
+
+        <label>Description</label>
+        <input
+          type="text"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+        />
+
+        <button type="submit">Add Transaction</button>
+      </form>
     </>
   );
 }
