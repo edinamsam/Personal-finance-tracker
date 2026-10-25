@@ -7,6 +7,7 @@ function App() {
     totalExpenses: 0,
     balance: 0,
   });
+  const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
     const fetchSummary = async () => {
@@ -21,8 +22,6 @@ function App() {
 
         const data = await response.json();
 
-        console.log("API response", data);
-
         setSummary(data);
       } catch (error) {
         console.error("Error fetching summary:", error.message);
@@ -30,6 +29,25 @@ function App() {
     };
 
     fetchSummary();
+  }, []);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/transactions");
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch transactions");
+        }
+
+        const data = await response.json();
+        setTransactions(data);
+      } catch (error) {
+        console.error("Error fetching transactions:", error.message);
+      }
+    };
+
+    fetchTransactions();
   }, []);
 
   return (
@@ -44,6 +62,28 @@ function App() {
 
       <h2>Total Expenses</h2>
       <p>GHC{summary.totalExpenses.toFixed(2)}</p>
+
+      <h2>Recent Transactions</h2>
+      {transactions.map((transaction) => {
+        return (
+          <div key={transaction._id} className="transaction-container">
+            <div>
+              <h3>{transaction.category}</h3>
+              <div>
+                <p>{transaction.description}</p>
+                <span>{transaction.type}</span>
+              </div>
+              <p>{new Date(transaction.date).toLocaleDateString()}</p>
+            </div>
+
+            <p
+              style={{ color: transaction.type === "income" ? "green" : "red" }}
+            >
+              GHC{transaction.amount.toFixed(2)}
+            </p>
+          </div>
+        );
+      })}
     </>
   );
 }
