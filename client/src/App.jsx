@@ -17,6 +17,39 @@ function App() {
     description: "",
   });
 
+  const fetchSummary = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/transactions/summary",
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch transaction summary");
+      }
+
+      const data = await response.json();
+
+      setSummary(data);
+    } catch (error) {
+      console.error("Error fetching summary:", error.message);
+    }
+  };
+
+  const fetchTransactions = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/transactions");
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch transactions");
+      }
+
+      const data = await response.json();
+      setTransactions(data);
+    } catch (error) {
+      console.error("Error fetching transactions:", error.message);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -45,6 +78,16 @@ function App() {
 
       const data = await response.json();
 
+      await fetchSummary();
+      await fetchTransactions();
+
+      setFormData({
+        type: "expense",
+        amount: "",
+        category: "",
+        description: "",
+      });
+
       console.log("Transaction created:", data.transaction);
     } catch (error) {
       console.log("Error creating transaction:", error.message);
@@ -52,43 +95,10 @@ function App() {
   };
 
   useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:5000/api/transactions/summary",
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch transaction summary");
-        }
-
-        const data = await response.json();
-
-        setSummary(data);
-      } catch (error) {
-        console.error("Error fetching summary:", error.message);
-      }
-    };
-
     fetchSummary();
   }, []);
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/api/transactions");
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch transactions");
-        }
-
-        const data = await response.json();
-        setTransactions(data);
-      } catch (error) {
-        console.error("Error fetching transactions:", error.message);
-      }
-    };
-
     fetchTransactions();
   }, []);
 
