@@ -7,15 +7,14 @@ function App() {
     totalExpenses: 0,
     balance: 0,
   });
-
   const [transactions, setTransactions] = useState([]);
-
   const [formData, setFormData] = useState({
     type: "expense",
     amount: "",
     category: "",
     description: "",
   });
+  const [errors, setErrors] = useState({});
 
   const fetchSummary = async () => {
     try {
@@ -58,8 +57,38 @@ function App() {
     });
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    // 1. Check whether amount is empty or invalid.
+    // 2. Check whether amount is greater than zero.
+    const amount = Number(formData.amount);
+
+    if (formData.amount.trim() === "") {
+      newErrors.amount = "Amount is required";
+    } else if (!Number.isFinite(amount)) {
+      newErrors.amount = "Please enter a valid amount";
+    } else if (amount <= 0) {
+      newErrors.amount = "Amount must be greater than zero";
+    }
+
+    // 3. Check whether category is selected.
+    if (!formData.category) {
+      newErrors.category = "Please select a category";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:5000/api/transactions", {
         method: "POST",
@@ -151,6 +180,7 @@ function App() {
           value={formData.amount}
           onChange={handleChange}
         />
+        {errors.amount && <p className="error">{errors.amount}</p>}
 
         <label>Category</label>
         <input
@@ -159,6 +189,7 @@ function App() {
           value={formData.category}
           onChange={handleChange}
         />
+        {errors.category && <p className="error">{errors.category}</p>}
 
         <label>Description</label>
         <input

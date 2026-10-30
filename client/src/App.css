@@ -10,3 +10,9 @@
 .transaction-container p {
     margin: 4px 0;
 }
+
+.error {
+    color: red;
+    font-size: 0.875rem;
+    margin-top: 4px;
+}
