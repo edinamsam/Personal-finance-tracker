@@ -193,6 +193,9 @@ function App() {
           name="category"
           value={formData.category}
           onChange={handleChange}
+          min="0.01"
+          step="0.01"
+          required
         />
         {errors.category && <p className="error">{errors.category}</p>}
 
