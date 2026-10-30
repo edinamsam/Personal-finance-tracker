@@ -55,6 +55,11 @@ function App() {
     setFormData((prev) => {
       return { ...prev, [name]: value };
     });
+
+    setErrors((prev) => ({
+      prev,
+      [name]: "",
+    }));
   };
 
   const validateForm = () => {
