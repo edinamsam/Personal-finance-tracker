@@ -20,6 +20,26 @@ app.get("/api/health", (req, res) => {
 
 app.post("/api/transactions", async (req, res) => {
   try {
+    const { type, amount, category, description } = req.body;
+
+    if (!["income", "expense"].includes(type)) {
+      return res.status(400).json({
+        message: "Type must be income or expense",
+      });
+    }
+
+    if (
+      amount === undefined ||
+      amount === null ||
+      amount === "" ||
+      !Number.isFinite(Number(amount)) ||
+      Number(amount) <= 0
+    ) {
+      return res.status(400).json({
+        message: "Amount must be a valid number greater than zero",
+      });
+    }
+
     const transaction = await Transaction.create(req.body);
 
     res.status(200).json({
