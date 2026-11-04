@@ -122,6 +122,8 @@ function App() {
         description: "",
       });
 
+      setErrors({});
+
       console.log("Transaction created:", data.transaction);
     } catch (error) {
       console.log("Error creating transaction:", error.message);
