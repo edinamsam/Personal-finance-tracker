@@ -46,6 +46,12 @@ app.post("/api/transactions", async (req, res) => {
       });
     }
 
+    if (description !== undefined && typeof description !== "string") {
+      return res.status(400).json({
+        message: "Description must be a string",
+      });
+    }
+
     const transaction = await Transaction.create(req.body);
 
     res.status(200).json({
