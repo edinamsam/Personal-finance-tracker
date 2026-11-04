@@ -40,7 +40,7 @@ app.post("/api/transactions", async (req, res) => {
       });
     }
 
-    if (!category || category.trim() === "") {
+    if (typeof category !== "string" || category.trim() === "") {
       return res.status(400).json({
         message: "Category is required",
       });
