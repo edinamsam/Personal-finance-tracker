@@ -52,7 +52,12 @@ app.post("/api/transactions", async (req, res) => {
       });
     }
 
-    const transaction = await Transaction.create(req.body);
+    const transaction = await Transaction.create({
+      type,
+      amount: Number(amount),
+      category: category.trim(),
+      description: description?.trim() || "",
+    });
 
     res.status(200).json({
       message: "Transaction created successfully",
